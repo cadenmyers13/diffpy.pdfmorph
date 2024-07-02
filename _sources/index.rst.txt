@@ -1,7 +1,11 @@
-Welcome to PDFmorph's Documentation!
-====================================
+#############################################
+diffpy.pdfmorph documentation
+#############################################
 
-``PDFmorph``: An easy way to compare PDFs.
+diffpy.pdfmorph - Tools for manipulating and comparing PDF profiles.
+
+| Software version |release|.
+| Last updated |today|.
 
 Introduction
 ++++++++++++
@@ -35,38 +39,42 @@ the plotted PDFs.
 Finally, we note that though ``PDFmorph`` should work on other spectra 
 that are not PDFs, it has not been extensively tested beyond the PDF.
 
+To get started, please download our :download:`user manual  <../manual/pdfmorph.pdf>`
+or visit the :ref:`quick_start`.
 
+=======
 Authors
--------
+=======
 
 ``PDFmorph`` is developed by members of the Billinge Group at 
 Columbia University and Brookhaven National Laboratory including 
 Christopher L. Farrow, Christopher J. Wright, Pavol Juhás, Chia-Hao
-(Timothy) Liu, S. Matthew Román, and Simon J. L. Billinge.
+(Timothy) Liu, Andrew Yang, and Simon J. L. Billinge.
 
-For a detailed list of contributors, check `here 
-<https://github.com/diffpy/diffpy.pdfmorph/graphs/contributors>`_.
+For a detailed list of contributors see
+https://github.com/diffpy/diffpy.pdfmorph/graphs/contributors.
 
-To get started, please go to :ref:`quick_start`
+============
+Installation
+============
 
+See the `README <https://github.com/diffpy/diffpy.pdfmorph#installation>`_
+file included with the distribution.
+
+=================
+Table of contents
+=================
 .. toctree::
-   :maxdepth: 3
-   :hidden:
+   :titlesonly:
 
    quickstart
-
-.. toctree::
-   :maxdepth: 4
-   :caption: Contents:
-
    license
    release
-   package
+   Package API <api/diffpy.pdfmorph>
 
-.. include:: ../../../CHANGELOG.rst
-
+=======
 Indices
--------
+=======
 
 * :ref:`genindex`
 * :ref:`search`
