@@ -243,6 +243,21 @@ class TestApp:
             single_morph(self.parser, opts, pargs, stdout_flag=False)
         assert "a could not be converted to float." in str(excinfo.value)
 
+        # Non-sensical smearing function
+        opts, pargs = self.parser.parse_args(
+            [
+                f"{nickel_PDF}",
+                f"{nickel_PDF}",
+                "--smear",
+                "0",
+                "--smear-function",
+                "not-a-smearing-function",
+            ]
+        )
+        with pytest.raises(ValueError) as excinfo:
+            single_morph(self.parser, opts, pargs, stdout_flag=False)
+        assert "Could not process smearing function." in str(excinfo.value)
+
     def test_morphsequence(self, setup_morphsequence):
         # Parse arguments sorting by field
         opts, pargs = self.parser.parse_args(

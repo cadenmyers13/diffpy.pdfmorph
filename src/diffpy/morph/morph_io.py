@@ -39,6 +39,7 @@ def build_morph_inputs_container(
     stretch,
     smear_pdf,
     smear,
+    smear_func,
     hshift,
     vshift,
     squeeze,
@@ -104,11 +105,27 @@ def build_morph_inputs_container(
         smear_in = smear
     else:
         smear_in = smear_pdf
-    morph_inputs = {
-        "scale": scale_in,
-        "stretch": stretch_in,
-        "smear": smear_in,
-    }
+    if smear_func is not None:
+        smear_func = smear_func.lower()
+    if smear_func is None or smear_func == "gaussian":
+        smear_func_in = "gaussian"
+    elif smear_func == "lorentzian":
+        smear_func_in = "lorentzian"
+    else:
+        smear_func_in = "unknown"
+    if smear_in is None:
+        morph_inputs = {
+            "scale": scale_in,
+            "stretch": stretch_in,
+            "smear": smear_in,
+        }
+    else:
+        morph_inputs = {
+            "scale": scale_in,
+            "stretch": stretch_in,
+            "smear": smear_in,
+            "smear-function": smear_func_in,
+        }
 
     if squeeze_poly_deg < 0:
         hshift_in = hshift
@@ -126,6 +143,11 @@ def build_morph_inputs_container(
 
 def get_terminal_morph_output(mr_copy, uncertainties):
     morphs_out = "# Optimized morphing parameters:\n"
+
+    # Handle special inputs (strings)
+    if "smear_func" in mr_copy:
+        mr_copy.pop("smear_func")
+
     # Handle special inputs (numerical)
     if "squeeze" in mr_copy:
         sq_dict = mr_copy.pop("squeeze")

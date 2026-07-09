@@ -139,17 +139,28 @@ squeeze: list of float
     When this parameter is given, hshift is disabled.
     When n>1, stretch is disabled.
 smear: float
-    Smear the peaks with a Gaussian of width smear.
+    Smear the peaks with a function of width SMEAR.
 
+    The smearing function is chosen by the --smear-function option
+    (default is Gaussian if that option is not enabled).
     This is done by convolving the function with a Gaussian
     with standard deviation smear. If both smear and
     smear_pdf are used, only smear_pdf will be
     applied.
 smear_pdf: float
     Convert PDF to RDF. Then, smear peaks with a Gaussian
-    of width smear_pdf. Convert back to PDF. If both smear and
+    of width smear_pdf.
+    The smearing function is chosen by the --smear-function option
+    (default is Gaussian if that option is not enabled).
+    Convert back to PDF. If both smear and
     smear_pdf are used, only smear_pdf will be
     applied.
+smear_func: str
+    Choose the function for the smear morph.
+    Only used if --smear or --smear-pdf is enabled.
+    Available options: Gaussian (default) and Lorentzian.
+    If Gaussian, the SMEAR parameter is (+/-) the standard deviation.
+    If Lorentzian, the SMEAR parameter is (+/-) the half width half maximum.
 slope: float
     Slope of the baseline used in converting from PDF to RDF.
 

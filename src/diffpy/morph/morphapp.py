@@ -245,9 +245,11 @@ def create_option_parser():
         type="float",
         metavar="SMEAR",
         help=(
-            "Smear the peaks with a Gaussian of width SMEAR. "
+            "Smear the peaks with a function of width SMEAR. "
+            "The smearing function is chosen by the --smear-function option "
+            "(default is Gaussian if that option is not enabled). "
             "This is done by convolving the function with a "
-            "Gaussian with standard deviation SMEAR. "
+            "function with width SMEAR. "
             "If both --smear and --smear-pdf are enabled, "
             "only --smear-pdf will be applied."
         ),
@@ -258,10 +260,27 @@ def create_option_parser():
         metavar="SMEAR",
         help=(
             "Convert PDF to RDF. "
-            "Then, smear peaks with a Gaussian of width SMEAR. "
+            "Then, smear peaks with a function of width SMEAR. "
+            "The smearing function is chosen by the --smear-function option "
+            "(default is Gaussian if that option is not enabled). "
             "Convert back to PDF. "
             "If both --smear and --smear-pdf are enabled, "
             "only --smear-pdf will be applied."
+        ),
+    )
+    group.add_option(
+        "--smear-function",
+        "--smear-func",
+        dest="smear_func",
+        metavar="SMEARFUNCTION",
+        help=(
+            "Choose the function for the smear morph. "
+            "Only used if --smear or --smear-pdf is enabled. "
+            "Available options: Gaussian (default) and Lorentzian. "
+            "If Gaussian, the SMEAR parameter is the standard "
+            "deviation. "
+            "If Lorentzian, the SMEAR parameter is the half width "
+            "half maximum."
         ),
     )
     group.add_option(
@@ -665,6 +684,9 @@ def single_morph(
         config["stretch"] = stretch_in
         refpars.append("stretch")
     # Smear
+    smear_func = "gaussian"
+    if opts.smear_func is not None:
+        smear_func = opts.smear_func.lower()
     if opts.smear_pdf is not None:
         smear_in = opts.smear_pdf
         chain.append(helpers.TransformXtalPDFtoRDF())
@@ -672,6 +694,7 @@ def single_morph(
         chain.append(helpers.TransformXtalRDFtoPDF())
         refpars.append("smear")
         config["smear"] = smear_in
+        config["smear_func"] = smear_func
         # Set baselineslope if not given
         config["baselineslope"] = opts.baselineslope
         if opts.baselineslope is None:
@@ -682,6 +705,7 @@ def single_morph(
         chain.append(morphs.MorphSmear())
         refpars.append("smear")
         config["smear"] = smear_in
+        config["smear_func"] = smear_func
     # Shift
     # Only enable hshift is squeeze is not enabled
     shift_morph = None
@@ -825,6 +849,7 @@ def single_morph(
         opts.stretch,
         opts.smear_pdf,
         opts.smear,
+        opts.smear_func,
         opts.hshift,
         opts.vshift,
         opts.squeeze,
@@ -1060,6 +1085,7 @@ def multiple_targets(parser, opts, pargs, stdout_flag=True, python_wrap=False):
         opts.stretch,
         opts.smear_pdf,
         opts.smear,
+        opts.smear_func,
         opts.hshift,
         opts.vshift,
         opts.squeeze,
@@ -1254,6 +1280,7 @@ def multiple_morphs(parser, opts, pargs, stdout_flag=True, python_wrap=False):
         opts.stretch,
         opts.smear_pdf,
         opts.smear,
+        opts.smear_func,
         opts.hshift,
         opts.vshift,
         opts.squeeze,

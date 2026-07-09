@@ -34,6 +34,8 @@ test_saving_grid = testsaving_dir.joinpath("grids")
 test_saving_grid_default = test_saving_grid.joinpath("default")
 test_saving_grid_original = test_saving_grid.joinpath("original")
 
+test_saving_smear = testsaving_dir.joinpath("smearfunc")
+
 tssf = testdata_dir.joinpath("testsequence_serialfile.json")
 
 
@@ -466,3 +468,115 @@ class TestApp:
         for unc in morph_info["uncertainties"].keys():
             assert unc in params
             assert morph_info["uncertainties"][unc] is not None
+
+    def test_smear_func_io(self, setup, tmp_path):
+        """Ensure the headers saved in the files when the smear morph is
+        enabled matches the desired output."""
+        file = self.testfiles[-1]
+        sfn = "smear_morph_result.cgr"
+        save_file = (tmp_path / sfn).resolve().as_posix()
+
+        # Check that default smearing function is Gaussian
+        # Compare with gaussian.cgr file to ensure the header in the
+        # file saved matches the desired output
+        opts, pargs = self.parser.parse_args(
+            [
+                "--smear",
+                "0",
+                "--xmax",
+                "10",
+                "--apply",
+                "-s",
+                save_file,
+                "-n",
+                "--verbose",
+            ]
+        )
+        pargs = [file, file]
+        single_morph(self.parser, opts, pargs, stdout_flag=False)
+        with open(test_saving_smear.joinpath("gaussian.cgr")) as tf:
+            with open(tmp_path.joinpath(sfn)) as gf:
+                actual = filter(ignore_path, gf)
+                expected = filter(ignore_path, tf)
+                are_files_same(actual, expected)
+
+        # Check the program can parse the smear function as gaussian
+        # irrespective of the capitalization provided
+        # Compare with gaussian.cgr file to ensure the header in the
+        # file saved matches the desired output
+        opts, pargs = self.parser.parse_args(
+            [
+                "--smear",
+                "0",
+                "--smear-func",
+                "gAuSsIaN",
+                "--xmax",
+                "10",
+                "--apply",
+                "-s",
+                save_file,
+                "-n",
+                "--verbose",
+            ]
+        )
+        pargs = [file, file]
+        single_morph(self.parser, opts, pargs, stdout_flag=False)
+        with open(test_saving_smear.joinpath("gaussian.cgr")) as tf:
+            with open(tmp_path.joinpath(sfn)) as gf:
+                actual = filter(ignore_path, gf)
+                expected = filter(ignore_path, tf)
+                are_files_same(actual, expected)
+
+        # Check the program can parse the smear function as lorentzian
+        # irrespective of the capitalization provided
+        # Compare with lorentzian.cgr file to ensure the header in the
+        # file saved matches the desired output
+        opts, pargs = self.parser.parse_args(
+            [
+                "--smear",
+                "0",
+                "--smear-func",
+                "LoReNtZiAn",
+                "--xmax",
+                "10",
+                "--apply",
+                "-s",
+                save_file,
+                "-n",
+                "--verbose",
+            ]
+        )
+        pargs = [file, file]
+        single_morph(self.parser, opts, pargs, stdout_flag=False)
+        with open(test_saving_smear.joinpath("lorentzian.cgr")) as tf:
+            with open(tmp_path.joinpath(sfn)) as gf:
+                actual = filter(ignore_path, gf)
+                expected = filter(ignore_path, tf)
+                are_files_same(actual, expected)
+
+        # Check that the program properly handles when the smearing function
+        # is not a known smearing function
+        # Compare with unknown.cgr file to ensure the header in the
+        # file saved matches the desired output
+        opts, pargs = self.parser.parse_args(
+            [
+                "--smear",
+                "0",
+                "--smear-func",
+                "not-a-smearing-function",
+                "--xmax",
+                "10",
+                "--apply",
+                "-s",
+                save_file,
+                "-n",
+                "--verbose",
+            ]
+        )
+        pargs = [file, file]
+        single_morph(self.parser, opts, pargs, stdout_flag=False)
+        with open(test_saving_smear.joinpath("unknown.cgr")) as tf:
+            with open(tmp_path.joinpath(sfn)) as gf:
+                actual = filter(ignore_path, gf)
+                expected = filter(ignore_path, tf)
+                are_files_same(actual, expected)

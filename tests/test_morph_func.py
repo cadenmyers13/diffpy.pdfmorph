@@ -93,6 +93,7 @@ def test_smear_with_morph_func():
     x_morph = x_target.copy()
     y_morph = np.exp(-0.5 * ((x_morph - r0) / sigma0) ** 2)
     cfg = morph_default_config(smear=0.1, scale=1.1, stretch=0.1)  # off init
+    cfg.update({"smear_func": None})
     morph_rv = morph(x_morph, y_morph, x_target, y_target, **cfg)
     morphed_cfg = morph_rv["morphed_config"]
     # verified they are morphable

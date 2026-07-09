@@ -258,6 +258,7 @@ class TestRefineUC:
             "scale": 1.0,
             "stretch": 0,
             "smear": 0,
+            "smear_func": None,
             "baselineslope": -4 * numpy.pi * 0.0917132,
         }
 

@@ -37,7 +37,7 @@ class MorphSmear(Morph):
     yinlabel = LABEL_RR
     xoutlabel = LABEL_RA
     youtlabel = LABEL_RR
-    parnames = ["smear"]
+    parnames = ["smear", "smear_func"]
 
     def morph(self, x_morph, y_morph, x_target, y_target):
         """Resample arrays onto specified grid."""
@@ -51,10 +51,23 @@ class MorphSmear(Morph):
         r = self.x_morph_in
         rr = self.y_morph_in
         r0 = r[len(r) // 2]
-        gaussian = numpy.exp(-0.5 * ((r - r0) / self.smear) ** 2)
+
+        function = None
+        # FIXME: Add a condition here that checks if smear_func is a function.
+        # FIXME: If smear_func is a function, set function = self.smear_func.
+        if self.smear_func is None or self.smear_func == "gaussian":
+            function = numpy.exp(-0.5 * ((r - r0) / self.smear) ** 2)
+        elif self.smear_func.lower() == "lorentzian":
+            function = numpy.abs(self.smear) / ((r - r0) ** 2 + self.smear**2)
+        else:
+            raise ValueError(
+                "Could not process smearing function. "
+                "Smearing function must be either "
+                "'gaussian' or 'lorentzian'."
+            )
 
         # Get the full convolution
-        c = numpy.convolve(rr, gaussian, mode="full")
+        c = numpy.convolve(rr, function, mode="full")
         # Find the centroid of the RDF, we don't want this to change from the
         # convolution.
         x1 = numpy.arange(len(rr), dtype=float)
@@ -69,7 +82,7 @@ class MorphSmear(Morph):
         rrbroad = numpy.interp(x1, xc, c)
 
         # Normalize so that the integrated magnitude of the RDF doesn't change.
-        rrbroad /= sum(gaussian)
+        rrbroad /= sum(function)
 
         self.y_morph_out = rrbroad
 
